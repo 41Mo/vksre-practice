@@ -125,6 +125,19 @@ function conf_kmodules() {
 
 }
 
+function print_help() {
+    echo "Syntax: script_p4_p14.sh [OPTION]..."
+    echo "--install_pkgs       installs a list of packages"
+    echo "--create_users       creates user accounts, generates SSH keys, copies public keys to authorized keys files, and copies private keys to a directory owned by another user."
+    echo "--recreate_users"
+    echo "--lvcreate           creates a logical volume for /var, formats it with ext4, and adds an entry to /etc/fstab"
+    echo "--swap               creates a swap file, formats it with mkswap, enables it with swapon, and adds an entry to /etc/fstab"
+    echo "--iptables           configures iptables"
+    echo "--netfilter"
+    echo "--configure_sshd     configures SSH daemon to disable root login and password authentication"
+    echo "--all-sequentially"
+}
+
 if [[ $EUID -ne 0 ]]; then
     echo "This script must be run as root"
     exit 1
@@ -162,8 +175,14 @@ do
             conf_kmodules
             conf_sshd
             ;;
+        --help )
+            print_help
+            ;;
 
-        * ) echo "Unknown option $key" ;;
+        * )
+            echo "Unknown option $key"
+            exit 1
+            ;;
     esac
     shift
 done
