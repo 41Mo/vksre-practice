@@ -77,6 +77,24 @@ function conf_iptables() {
     iptables-save > /etc/iptables/rules.v4
 }
 
+function conf_sshd() {
+    read -p "Warning: This script will disable root login and password authentication in SSH. Are you sure you want to continue? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+
+        SSHD_CONF="/etc/ssh/sshd_config"
+        cp "$SSHD_CONF" "$SSHD_CONF".bak
+
+        sed -i 's/^PermitRootLogin.*/PermitRootLogin no/g' "$SSHD_CONF"
+        sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/g' "$SSHD_CONF"
+
+        systemctl restart sshd.service
+    else
+        echo "Skipped sshd configuration"
+    fi
+}
+
 function conf_iptables_persistence() {
     echo "
 [Unit]
@@ -131,6 +149,8 @@ do
             ;;
         --netfilter )
             conf_kmodules ;;
+        --configure_sshd )
+            conf_sshd ;;
         --all-sequentially )
             install_pkgs
             create_users
@@ -139,6 +159,7 @@ do
             conf_iptables
             conf_iptables_persistence
             conf_kmodules
+            conf_sshd
             ;;
 
         * ) echo "Unknown option $key" ;;
