@@ -55,6 +55,7 @@ function conf_lvVar() {
     lvcreate -L "$LVVAR_SIZE" -n lvVAR vgKVM
     mkfs.ext4 /dev/mapper/vgKVM-lvVAR
     echo "/dev/mapper/vgKVM-lvVAR /var ext4 defaults 0 1" >> /etc/fstab
+    mount /dev/mapper/vgKVM-lvVAR /var
 }
 
 function conf_swap() {
