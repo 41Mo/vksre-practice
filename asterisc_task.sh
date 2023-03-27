@@ -70,7 +70,7 @@ function generate_data() {
     for (( i=$var; i<$(( $var + $NFILES )); i++ ))
     do
         file="$HOSTDIR/file_$i.dat"
-        head -c 100 /dev/random >> "$file"
+        head -c 100 /dev/random > "$file"
 
         if [ $(($i % 2)) -eq 0 ] && [ "$CHANGEMTIME" -eq 1 ]; then
             touch -d "$MODTIMETO" "$file"
