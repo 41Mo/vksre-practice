@@ -1,16 +1,26 @@
 #!/bin/bash
-set -e
-#set -x
+# set -e
+# set -x
 
-HOSTDIR="/var/log/test_dir"
-REMOTE_DIR="/var/log/test_dir"
+BASE_DIR="/var/log"
 
-REMOTE="admini@192.168.122.44"
-SSH_KEY_PATH="$HOME/.ssh/id_rsa.pub"
+HOSTDIR="$BASE_DIR"
+REMOTE_DIR="$BASE_DIR"
+REMOTE_USER="admini"
+REMOTE_IP="192.168.122.141"
+HOST_USER="admini"
+REMOTE="$REMOTE_USER@$REMOTE_IP"
+SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 
 FILES_OLDER_THAN_DAYS="7"
-NFILES=5
+NFILES=10
 NBYTES_PER_FILE=100
+
+#               minute hour day_of_month month day_of_week
+CRON_RULE_PUSH="*/2      *         *       *        * "
+CRON_RULE_DEL="*/1      *         *       *        * "
+
+# 1 <=> true; 0 <=> false
 
 # change MTIME of created files to MODTIMETO.
 CHANGEMTIME=1
@@ -21,6 +31,8 @@ HEADLESS=1
 
 # dry run mode. Dont delete any data
 DRY_RUN=0
+# cleanup generated date on host after push
+CLEAN_HOST_AFTER_PUSH=0
 
 
 function remove_old_files() {
@@ -41,6 +53,7 @@ function generate_data() {
     if [ ! -d "$HOSTDIR" ]; then
 
         if [ "$HEADLESS" -eq 1 ]; then
+            echo "$HOSTDIR doesnt exists."
             return -1
         fi
 
