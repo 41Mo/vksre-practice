@@ -24,11 +24,17 @@ DRY_RUN=0
 
 
 function remove_old_files() {
+    use_ssh=${1:-1}
+    findcmd="find $REMOTE_DIR/* -prune -name \"file_*.dat\" -type f -mtime +$FILES_OLDER_THAN_DAYS"
+    sshcmd="ssh $REMOTE -i $SSH_KEY_PATH"
+
     if [ "$DRY_RUN" -eq 1 ]; then
-        ssh "$REMOTE" -i "$SSH_KEY_PATH" "find $REMOTE_DIR/* -mtime +$FILES_OLDER_THAN_DAYS -exec ls -l {} \\;"
+        eval "$sshcmd '$findcmd -exec ls {} \\;'"
     else
-        ssh "$REMOTE" -i "$SSH_KEY_PATH" "find $REMOTE_DIR/* -mtime +$FILES_OLDER_THAN_DAYS -exec rm {} \\;"
+        eval "$sshcmd '$findcmd -exec rm {} \\;'"
     fi
+
+    echo "$(date) cleanup"
 }
 
 function generate_data() {
