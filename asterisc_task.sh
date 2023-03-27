@@ -49,11 +49,12 @@ function generate_data() {
         if [[ $REPLY =~ ^[Yy]$ ]]
         then
             sudo mkdir -p "$HOSTDIR"
-            sudo chown admini:admini "$HOSTDIR"
+            sudo chown "$REMOTE_USER:$REMOTE_USER" "$HOSTDIR"
         fi
-
     fi
-    for (( i=0; i<$(( $NFILES - 1 )); i++ ))
+
+    var=$RANDOM
+    for (( i=$var; i<$(( $var + $NFILES )); i++ ))
     do
         file="$HOSTDIR/file_$i.dat"
         head -c 100 /dev/random >> "$file"
@@ -63,6 +64,11 @@ function generate_data() {
         fi
 
     done
+
+    echo "$(date) generated_data"
+
+}
+
 }
 
 while [[ $# -gt 0 ]]
