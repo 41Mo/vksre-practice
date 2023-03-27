@@ -24,6 +24,8 @@ CRON_RULE_DEL="*/1      *         *       *        * "
 
 # change MTIME of created files to MODTIMETO.
 CHANGEMTIME=1
+RANDOMFILENAMES=0
+CHANGEMTIME=0
 MODTIMETO="8 days ago"
 
 # run in headless mode, dont ask user anything
@@ -66,7 +68,11 @@ function generate_data() {
         fi
     fi
 
-    var=$RANDOM
+    if [ "$RANDOMFILENAMES" -eq 1]; then
+        var=$RANDOM
+    else
+        var=0
+    fi
     for (( i=$var; i<$(( $var + $NFILES )); i++ ))
     do
         file="$HOSTDIR/file_$i.dat"
