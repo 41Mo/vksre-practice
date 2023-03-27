@@ -69,6 +69,16 @@ function generate_data() {
 
 }
 
+function push_files_to_remote() {
+    scp -p "$HOSTDIR"/file_*.dat "$REMOTE:$REMOTE_DIR/"
+
+    if [[ $CLEAN_HOST_AFTER_PUSH -eq 1 ]]; then
+        remove_old_files 0
+    fi
+
+    echo """$(date) pushed to remote"
+}
+
 function configure_remote() {
     grp=$(ssh -i "$SSH_KEY_PATH" "$REMOTE" stat -c "%G" "$BASE_DIR")
 
