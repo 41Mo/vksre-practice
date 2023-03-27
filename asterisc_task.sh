@@ -13,7 +13,7 @@ REMOTE="$REMOTE_USER@$REMOTE_IP"
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"
 
 FILES_OLDER_THAN_DAYS="7"
-NFILES=10
+NFILES=5
 NBYTES_PER_FILE=100
 
 #               minute hour day_of_month month day_of_week
@@ -23,7 +23,6 @@ CRON_RULE_DEL="*/1      *         *       *        * "
 # 1 <=> true; 0 <=> false
 
 # change MTIME of created files to MODTIMETO.
-CHANGEMTIME=1
 RANDOMFILENAMES=0
 CHANGEMTIME=0
 MODTIMETO="8 days ago"
