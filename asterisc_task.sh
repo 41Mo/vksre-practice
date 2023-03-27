@@ -130,16 +130,23 @@ function configure_host() {
 
 while [[ $# -gt 0 ]]
 do
-    key="$1"
+    key=""$1
     case $key in
-        --remove_old_files )
+        --distclean )
             remove_old_files
+            ;;
+        --push )
+            push_files_to_remote
             ;;
         --gen_data )
             generate_data
             ;;
+        --configure )
+            configure_host
+            configure_remote
+            ;;
         * )
-            echo "Unknown option $key"
+            echo "Unknown option ""$key"
             exit 1
             ;;
     esac
