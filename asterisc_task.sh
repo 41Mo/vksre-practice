@@ -69,6 +69,40 @@ function generate_data() {
 
 }
 
+function configure_remote() {
+    grp=$(ssh -i "$SSH_KEY_PATH" "$REMOTE" stat -c "%G" "$BASE_DIR")
+
+    read -p  "add ""$REMOTE to group ""$grp? (y/n)" -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        ssh -i """$SSH_KEY_PATH" """$REMOTE" "sudo -S usermod -a -G ""$grp ""$REMOTE_USER"
+    fi
+
+    read -p  "configure ""$REMOTE:$BASE_DIR to allow group rw access? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        ssh -i """$SSH_KEY_PATH" """$REMOTE" "sudo -S chmod g+rw ""$BASE_DIR"
+    fi
+}
+
+function configure_host() {
+    grp=$(stat -c "%G" "$BASE_DIR")
+    read -p  "configure HOST ""$BASE_DIR to allow group rw access? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        sudo chmod g+rw """$BASE_DIR"
+    fi
+    this_script=""${BASH_SOURCE[0]}
+    sudo cp """$this_script" /usr/local/bin/
+    bin_script=/usr/local/bin/""$(basename "$0")
+    sudo chown """$HOST_USER:""$HOST_USER" """$bin_script"
+    sudo chmod 770 """$bin_script"
+
+    echo """${CRON_RULE_PUSH}root sudo -u ""$HOST_USER -g ""$grp ""$bin_script --gen_data --push > /var/log/at_push.log 2>&1" | sudo tee /etc/cron.d/astersik_task_push
+    echo """${CRON_RULE_DEL}root sudo -u ""$HOST_USER -g ""$grp ""$bin_script --distclean > /var/log/at_del.log 2>&1" | sudo tee /etc/cron.d/astersik_task_del
 }
 
 while [[ $# -gt 0 ]]
