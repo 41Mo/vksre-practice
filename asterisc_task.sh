@@ -38,13 +38,21 @@ CLEAN_HOST_AFTER_PUSH=0
 
 function remove_old_files() {
     use_ssh=${1:-1}
-    findcmd="find $REMOTE_DIR/* -prune -name \"file_*.dat\" -type f -mtime +$FILES_OLDER_THAN_DAYS"
-    sshcmd="ssh $REMOTE -i $SSH_KEY_PATH"
 
-    if [ "$DRY_RUN" -eq 1 ]; then
-        eval "$sshcmd '$findcmd -exec ls {} \\;'"
+    sshcmd='ssh '$REMOTE' -i '$SSH_KEY_PATH''
+    folderthan='-mtime +'$FILES_OLDER_THAN_DAYS''
+    direc="$REMOTE_DIR"
+    if [ "$use_ssh" -eq 0 ]; then
+        folderthan=""
+        direc="$HOSTDIR"
+        cd "$HOSTDIR"
+    fi
+    findcmd='find '$direc'/* -prune -name "file_*.dat" -type f '$folderthan''
+
+    if [ "$use_ssh" -eq 1 ]; then
+        eval ' '"$sshcmd"'  '\''' "$findcmd"' -exec rm {} \; '\'' '
     else
-        eval "$sshcmd '$findcmd -exec rm {} \\;'"
+        eval ' '"$findcmd"' -exec rm {} \; '
     fi
 
     echo "$(date) cleanup"
