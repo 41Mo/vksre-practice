@@ -17,7 +17,7 @@ NFILES=5
 NBYTES_PER_FILE=100
 
 #               minute hour day_of_month month day_of_week
-CRON_RULE_PUSH="*/1      *         *       *        * "
+CRON_RULE="*/1      *         *       *        * "
 
 # 1 <=> true; 0 <=> false
 
@@ -150,7 +150,7 @@ function configure_host() {
     sudo chown "$HOST_USER:$HOST_USER" "$bin_script"
     sudo chmod 770 "$bin_script"
 
-    echo "${CRON_RULE_PUSH}root sudo -u $HOST_USER -g $grp $bin_script --gen_data --push --distclean > /var/log/at.log 2>&1" | sudo tee /etc/cron.d/astersik_task
+    echo "${CRON_RULE}root sudo -u $HOST_USER -g $grp $bin_script --gen_data --push --distclean > /var/log/at.log 2>&1" | sudo tee /etc/cron.d/astersik_task
 }
 
 while [[ $# -gt 0 ]]
