@@ -6,10 +6,12 @@ services:
   db:
     image: postgres
     restart: always
+    user: "1000:1000"
     environment:
-      POSTGRES_PASSWORD: example
+      - POSTGRES_PASSWORD=example
     volumes:
       - ./db:/var/lib/postgresql/data
+      - /etc/passwd:/etc/passwd:ro
     ports:
       - 5432:5432
 
