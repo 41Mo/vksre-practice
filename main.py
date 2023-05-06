@@ -16,12 +16,15 @@ csv.field_size_limit(sys.maxsize)
 
 csvFilePath = 'dump.csv'
 
+dbname='admini'
+
 def connect_db():
     try:
-        conn = pg.connect(database = "postgres", user = "postgres", password = "example", host = "localhost", port = "5432")
+        conn = pg.connect(database = "admini", user = "admini", password = "toortoor", host = "79.137.157.25", port = "5432")
         return conn
-    except:
+    except Exception as e:
         print("unable to connect to the database") 
+        raise e
         sys.exit(-1)
 
 def maxlen(arr):
@@ -80,7 +83,6 @@ def import_file(filename):
 
                     for u in url.split('|'):
                         inserts.append({
-                            'id': inserted,
                             'ip': ip,
                             'ip_first': format(ip_first),
                             'ip_last': format(ip_last),
@@ -108,7 +110,7 @@ if args.create_db_scheme:
         print("can't drop table!")
 
     try:
-        cur.execute("CREATE TABLE blocked (id int, ip varchar(18), ip_first varchar(16), ip_last varchar(16), length int, decision_date varchar(1024), decision_org varchar(1024), decision_num varchar(1024), domain varchar(1024), url varchar(10000));")
+        cur.execute("CREATE TABLE blocked (ip varchar(18), ip_first varchar(16), ip_last varchar(16), length varchar(20), decision_date varchar(1024), decision_org varchar(1024), decision_num varchar(1024), domain varchar(1024), url varchar(10000));")
     except:
         print("can't drop database!")
         sys.exit(0)
@@ -120,16 +122,21 @@ if args.create_db_scheme:
 
 parsed = import_file("dump.csv")
 
+listoftuples = []
+for e in parsed:
+    listoftuples.append(tuple(e.values()))
+
 conn = connect_db()
 cursor = conn.cursor()
-for d in parsed:
-    try:
-        cursor.execute(f"INSERT INTO blocked(ip, ip_first, ip_last, length, decision_date, decision_org, decision_num, domain, url) VALUES{d['ip'], d['ip_first'], d['ip_last'], d['length'], d['decision_date'], d['decision_org'], d['decision_num'], d['domain'], d['url']}")
-    except Exception as e:
-        print(d)
-        raise
-        sys.exit(0)
+print("insert to db")
+#for d in parsed:
+try:
+    cursor.executemany("INSERT INTO blocked(ip, ip_first, ip_last, length, decision_date, decision_org, decision_num, domain, url) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)", listoftuples)
+except Exception as e:
+    raise
+    sys.exit(0)
 
+print("exec many ok!")
 #try:
 #cur.executemany(SQL_INSERT, parsed)
 #except:
