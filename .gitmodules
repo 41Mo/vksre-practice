@@ -1,0 +1,3 @@
+[submodule "jenkinsansiblebook"]
+	path = jenkinsansiblebook
+	url = git@github.com:41Mo/jenkinsansiblebook.git
